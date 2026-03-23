@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalAgenda - Sistema de Citas para Abogados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-bg"></div>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="logo-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h1 class="logo-title">LegalAgenda</h1>
+          <p class="logo-subtitle">Sistema de Gestión de Citas</p>
+        </div>
+        
+        <form id="login-form" class="login-form">
+          <div id="login-error" class="login-error hidden">Credenciales incorrectas</div>
+          
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              <input type="email" id="login-email" placeholder="usuario@bufete.com" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Contraseña</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <input type="password" id="login-password" placeholder="••••••••" required>
+              <button type="button" class="toggle-password" onclick="togglePassword()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-login">
+            <span id="login-text">Iniciar Sesión</span>
+            <div id="login-spinner" class="spinner hidden"></div>
+          </button>
+        </form>
+        
+        <div class="demo-credentials">
+          <p class="demo-title">Credenciales de prueba:</p>
+          <div class="demo-list">
+            <p><strong>Admin:</strong> admin@bufete.com / password</p>
+            <p><strong>Secretaria:</strong> secretaria@bufete.com / password</p>
+            <p><strong>Abogado:</strong> carlos.martinez@bufete.com / password</p>
+          </div>
+        </div>
+      </div>
+      
+      <p class="login-footer">© 2024 LegalAgenda. Todos los derechos reservados.</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen" class="app-screen hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon-small">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <span class="sidebar-title">LegalAgenda</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Calendario Principal</span>
+        </button>
+        <button class="nav-item" data-page="secretary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Vista Secretaria</span>
+        </button>
+        <button class="nav-item" data-page="lawyers">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Abogados</span>
+        </button>
+        <button class="nav-item" data-page="documents">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10,9 9,9 8,9"/>
+          </svg>
+          <span>Documentos</span>
+        </button>
+        <button class="nav-item" data-page="settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Configuración</span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button class="nav-item logout" onclick="logout()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16,17 21,12 16,7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <h2 class="page-title" id="page-title">Calendario Principal</h2>
+        </div>
+        
+        <div class="header-right">
+          <button class="header-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notification-dot"></span>
+          </button>
+          
+          <div class="user-menu">
+            <button class="user-btn" onclick="toggleUserMenu()">
+              <div class="user-avatar" id="user-avatar">A</div>
+              <div class="user-info">
+                <span class="user-name" id="user-name">Administrador</span>
+                <span class="user-role" id="user-role">Admin</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"/>
+              </svg>
+            </button>
+            
+            <div class="user-dropdown hidden" id="user-dropdown">
+              <button onclick="navigateTo('settings')">Configuración</button>
+              <button onclick="logout()" class="text-danger">Cerrar Sesión</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-content" id="page-content">
+        <!-- Dashboard / Calendar -->
+        <div id="page-dashboard" class="page">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button class="btn-icon" onclick="prevMonth()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15,18 9,12 15,6"/>
+                </svg>
+              </button>
+              <h3 class="calendar-title" id="calendar-month">Marzo 2024</h3>
+              <button class="btn-icon" onclick="nextMonth()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9,18 15,12 9,6"/>
+                </svg>
+              </button>
+              <button class="btn-text" onclick="goToToday()">Hoy</button>
+            </div>
+            
+            <div class="calendar-actions">
+              <div class="filter-group">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+                </svg>
+                <select id="lawyer-filter" onchange="filterByLawyer()">
+                  <option value="all">Todos los abogados</option>
+                </select>
+              </div>
+              
+              <button class="btn-primary" onclick="openAppointmentModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Nueva Cita</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="calendar-legend">
+            <div class="legend-item">
+              <span class="legend-dot available"></span>
+              <span>Disponible</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot booked"></span>
+              <span>Agendado</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot pending"></span>
+              <span>Pendiente</span>
+            </div>
+          </div>
+          
+          <div class="calendar-container">
+            <div class="calendar-weekdays">
+              <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div>
+              <div>Jue</div><div>Vie</div><div>Sáb</div>
+            </div>
+            <div class="calendar-days" id="calendar-days"></div>
+          </div>
+        </div>
+
+        <!-- Secretary View -->
+        <div id="page-secretary" class="page hidden">
+          <div class="secretary-header">
+            <div class="day-nav">
+              <button class="btn-icon" onclick="prevDay()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15,18 9,12 15,6"/>
+                </svg>
+              </button>
+              <div class="day-info">
+                <h3 class="day-title" id="day-title">Hoy</h3>
+                <p class="day-date" id="day-date">23 de marzo, 2024</p>
+              </div>
+              <button class="btn-icon" onclick="nextDay()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9,18 15,12 9,6"/>
+                </svg>
+              </button>
+              <button class="btn-text" onclick="goToTodayDay()">Hoy</button>
+            </div>
+            
+            <div class="secretary-actions">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-appointments" placeholder="Buscar cita..." oninput="searchAppointments()">
+              </div>
+              
+              <select id="secretary-lawyer-filter" onchange="filterSecretaryByLawyer()">
+                <option value="all">Todos los abogados</option>
+              </select>
+              
+              <button class="btn-primary" onclick="openAppointmentModalWithDate()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Nueva Cita</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon confirmed">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-confirmed">0</span>
+                <span class="stat-label">Confirmadas</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon pending">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-pending">0</span>
+                <span class="stat-label">Pendientes</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon available">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12,6 12,12 16,14"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-available">15</span>
+                <span class="stat-label">Disponibles</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon total">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-total">0</span>
+                <span class="stat-label">Total Citas</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="time-slots-container">
+            <div class="time-slots-header">
+              <h4>Horarios del Día</h4>
+              <p>Haga clic en un horario para agendar una cita</p>
+            </div>
+            <div class="time-slots-grid" id="time-slots-grid"></div>
+          </div>
+        </div>
+
+        <!-- Lawyers -->
+        <div id="page-lawyers" class="page hidden">
+          <div class="lawyers-header">
+            <div>
+              <h3 class="section-title">Gestión de Abogados</h3>
+              <p class="section-subtitle">Administre los abogados del bufete</p>
+            </div>
+            <button class="btn-primary" onclick="openLawyerModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Nuevo Abogado</span>
+            </button>
+          </div>
+          
+          <div class="search-box full-width">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="search-lawyers" placeholder="Buscar abogado por nombre, especialidad o correo..." oninput="searchLawyers()">
+          </div>
+          
+          <div class="lawyers-grid" id="lawyers-grid"></div>
+        </div>
+
+        <!-- Documents -->
+        <div id="page-documents" class="page hidden">
+          <div class="documents-header">
+            <div>
+              <h3 class="section-title">Documentos</h3>
+              <p class="section-subtitle">Gestione los documentos de sus casos</p>
+            </div>
+            <div class="documents-actions">
+              <button class="btn-secondary" onclick="connectGoogleDrive()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span>Google Drive</span>
+              </button>
+              <button class="btn-primary" onclick="openUploadModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17,8 12,3 7,8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span>Subir Archivo</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="documents-filters">
+            <div class="search-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="search-documents" placeholder="Buscar documentos..." oninput="searchDocuments()">
+            </div>
+            
+            <div class="filter-tabs">
+              <button class="filter-tab active" data-filter="all">Todos</button>
+              <button class="filter-tab" data-filter="pdf">PDF</button>
+              <button class="filter-tab" data-filter="image">Imágenes</button>
+              <button class="filter-tab" data-filter="doc">Documentos</button>
+            </div>
+          </div>
+          
+          <div class="documents-list" id="documents-list"></div>
+        </div>
+
+        <!-- Settings -->
+        <div id="page-settings" class="page hidden">
+          <div class="settings-header">
+            <h3 class="section-title">Configuración</h3>
+            <p class="section-subtitle">Administre su cuenta y preferencias</p>
+          </div>
+          
+          <div class="settings-layout">
+            <div class="settings-tabs">
+              <button class="settings-tab active" data-tab="profile">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Perfil</span>
+              </button>
+              <button class="settings-tab" data-tab="notifications">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span>Notificaciones</span>
+              </button>
+              <button class="settings-tab" data-tab="integrations">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span>Integraciones</span>
+              </button>
+              <button class="settings-tab" data-tab="security">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Seguridad</span>
+              </button>
+            </div>
+            
+            <div class="settings-content">
+              <!-- Profile Tab -->
+              <div id="tab-profile" class="settings-panel">
+                <h4>Información del Perfil</h4>
+                <p>Actualice su información personal</p>
+                
+                <div class="form-group">
+                  <label>Nombre Completo</label>
+                  <input type="text" id="profile-name" value="Administrador">
+                </div>
+                
+                <div class="form-group">
+                  <label>Correo Electrónico</label>
+                  <input type="email" id="profile-email" value="admin@bufete.com">
+                </div>
+                
+                <div class="form-group">
+                  <label>Teléfono</label>
+                  <input type="tel" id="profile-phone" placeholder="+52 55 1234 5678">
+                </div>
+                
+                <button class="btn-primary" onclick="saveProfile()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                  </svg>
+                  <span>Guardar Cambios</span>
+                </button>
+              </div>
+              
+              <!-- Notifications Tab -->
+              <div id="tab-notifications" class="settings-panel hidden">
+                <h4>Configuración de Notificaciones</h4>
+                <p>Elija cómo desea recibir las notificaciones</p>
+                
+                <div class="checkbox-list">
+                  <label class="checkbox-item">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    <div>
+                      <strong>Notificaciones por Email</strong>
+                      <p>Recibir notificaciones en mi correo electrónico</p>
+                    </div>
+                  </label>
+                  
+                  <label class="checkbox-item">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    <div>
+                      <strong>Recordatorios de Citas</strong>
+                      <p>Recordarme las citas programadas</p>
+                    </div>
+                  </label>
+                  
+                  <label class="checkbox-item">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    <div>
+                      <strong>Alertas de Nuevas Citas</strong>
+                      <p>Notificarme cuando se agregue una nueva cita</p>
+                    </div>
+                  </label>
+                  
+                  <label class="checkbox-item">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    <div>
+                      <strong>Alertas de Citas Canceladas</strong>
+                      <p>Notificarme cuando se cancele una cita</p>
+                    </div>
+                  </label>
+                </div>
+                
+                <button class="btn-primary" onclick="saveNotifications()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                  </svg>
+                  <span>Guardar Preferencias</span>
+                </button>
+              </div>
+              
+              <!-- Integrations Tab -->
+              <div id="tab-integrations" class="settings-panel hidden">
+                <h4>Integraciones</h4>
+                <p>Conecte sus servicios externos</p>
+                
+                <div class="integrations-list">
+                  <div class="integration-item">
+                    <div class="integration-info">
+                      <div class="integration-icon google-calendar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                          <line x1="16" y1="2" x2="16" y2="6"/>
+                          <line x1="8" y1="2" x2="8" y2="6"/>
+                          <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <strong>Google Calendar</strong>
+                        <p>Sincronice citas con Google Calendar</p>
+                      </div>
+                    </div>
+                    <button class="btn-connect" onclick="toggleIntegration(this)">Conectar</button>
+                  </div>
+                  
+                  <div class="integration-item">
+                    <div class="integration-info">
+                      <div class="integration-icon google-drive">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <strong>Google Drive</strong>
+                        <p>Almacene documentos en Google Drive</p>
+                      </div>
+                    </div>
+                    <button class="btn-connect" onclick="toggleIntegration(this)">Conectar</button>
+                  </div>
+                  
+                  <div class="integration-item">
+                    <div class="integration-info">
+                      <div class="integration-icon outlook">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                          <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <strong>Microsoft Outlook</strong>
+                        <p>Sincronice con Outlook Calendar</p>
+                      </div>
+                    </div>
+                    <button class="btn-connect" onclick="toggleIntegration(this)">Conectar</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Security Tab -->
+              <div id="tab-security" class="settings-panel hidden">
+                <h4>Seguridad</h4>
+                <p>Actualice su contraseña y configure la seguridad</p>
+                
+                <div class="form-group">
+                  <label>Contraseña Actual</label>
+                  <input type="password" placeholder="••••••••">
+                </div>
+                
+                <div class="form-group">
+                  <label>Nueva Contraseña</label>
+                  <input type="password" placeholder="••••••••">
+                </div>
+                
+                <div class="form-group">
+                  <label>Confirmar Nueva Contraseña</label>
+                  <input type="password" placeholder="••••••••">
+                </div>
+                
+                <button class="btn-primary" onclick="changePassword()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span>Cambiar Contraseña</span>
+                </button>
+                
+                <div class="security-tips">
+                  <h5>Consejos de Seguridad</h5>
+                  <ul>
+                    <li>Use al menos 8 caracteres</li>
+                    <li>Incluya números y símbolos</li>
+                    <li>No reutilice contraseñas de otros sitios</li>
+                    <li>Cambie su contraseña periódicamente</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Appointment Modal -->
+  <div id="appointment-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeAppointmentModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Nueva Cita</h3>
+        <button class="btn-close" onclick="closeAppointmentModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="appointment-form" onsubmit="saveAppointment(event)">
+        <input type="hidden" id="appointment-id">
+        
+        <div class="form-section">
+          <h4>Información del Cliente</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre Completo *</label>
+              <input type="text" id="client-name" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Correo Electrónico *</label>
+              <input type="email" id="client-email" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="tel" id="client-phone" placeholder="+52 55 1234 5678">
+            </div>
+            
+            <div class="form-group">
+              <label>Tipo de Consulta *</label>
+              <select id="appointment-type" required>
+                <option value="">Seleccionar tipo</option>
+                <option value="Consulta Civil">Consulta Civil</option>
+                <option value="Consulta Familiar">Consulta Familiar</option>
+                <option value="Consulta Mercantil">Consulta Mercantil</option>
+                <option value="Consulta Laboral">Consulta Laboral</option>
+                <option value="Consulta Penal">Consulta Penal</option>
+                <option value="Divorcio">Divorcio</option>
+                <option value="Testamento">Testamento</option>
+                <option value="Contrato">Contrato</option>
+                <option value="Demanda">Demanda</option>
+                <option value="Mediación">Mediación</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4>Detalles de la Cita</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha *</label>
+              <input type="date" id="appointment-date" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Abogado *</label>
+              <select id="appointment-lawyer" required>
+                <option value="">Seleccionar abogado</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Hora de Inicio *</label>
+              <select id="appointment-start" required>
+                <option value="08:00">08:00</option>
+                <option value="08:30">08:30</option>
+                <option value="09:00">09:00</option>
+                <option value="09:30">09:30</option>
+                <option value="10:00">10:00</option>
+                <option value="10:30">10:30</option>
+                <option value="11:00">11:00</option>
+                <option value="11:30">11:30</option>
+                <option value="12:00">12:00</option>
+                <option value="12:30">12:30</option>
+                <option value="13:00">13:00</option>
+                <option value="13:30">13:30</option>
+                <option value="14:00">14:00</option>
+                <option value="14:30">14:30</option>
+                <option value="15:00">15:00</option>
+                <option value="15:30">15:30</option>
+                <option value="16:00">16:00</option>
+                <option value="16:30">16:30</option>
+                <option value="17:00">17:00</option>
+                <option value="17:30">17:30</option>
+                <option value="18:00">18:00</option>
+                <option value="18:30">18:30</option>
+                <option value="19:00">19:00</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Hora de Fin *</label>
+              <select id="appointment-end" required>
+                <option value="09:00">09:00</option>
+                <option value="09:30">09:30</option>
+                <option value="10:00">10:00</option>
+                <option value="10:30">10:30</option>
+                <option value="11:00">11:00</option>
+                <option value="11:30">11:30</option>
+                <option value="12:00">12:00</option>
+                <option value="12:30">12:30</option>
+                <option value="13:00">13:00</option>
+                <option value="13:30">13:30</option>
+                <option value="14:00">14:00</option>
+                <option value="14:30">14:30</option>
+                <option value="15:00">15:00</option>
+                <option value="15:30">15:30</option>
+                <option value="16:00">16:00</option>
+                <option value="16:30">16:30</option>
+                <option value="17:00">17:00</option>
+                <option value="17:30">17:30</option>
+                <option value="18:00">18:00</option>
+                <option value="18:30">18:30</option>
+                <option value="19:00">19:00</option>
+                <option value="19:30">19:30</option>
+                <option value="20:00">20:00</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Notas Adicionales</label>
+            <textarea id="appointment-notes" rows="3" placeholder="Información adicional sobre la cita..."></textarea>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4>Integraciones</h4>
+          
+          <div class="integration-toggle">
+            <button type="button" class="btn-integration" id="btn-google-calendar" onclick="toggleGoogleCalendar()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span>Google Calendar</span>
+            </button>
+            
+            <button type="button" class="btn-integration" id="btn-google-drive" onclick="toggleGoogleDrive()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17,8 12,3 7,8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span>Google Drive</span>
+            </button>
+          </div>
+          
+          <div id="google-calendar-info" class="integration-info-box hidden">
+            <p><strong>Google Calendar:</strong> La cita se sincronizará automáticamente con el calendario del abogado seleccionado.</p>
+          </div>
+          
+          <div id="google-drive-info" class="integration-info-box hidden">
+            <p><strong>Google Drive:</strong> Se creará una carpeta para los documentos del cliente.</p>
+            <button type="button" class="btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17,8 12,3 7,8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span>Subir Documentos</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeAppointmentModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            <span id="save-btn-text">Agendar Cita</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Day Details Modal -->
+  <div id="day-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeDayModal()"></div>
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 id="day-modal-title">Citas del día</h3>
+        <button class="btn-close" onclick="closeDayModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="day-appointments" id="day-appointments"></div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeDayModal()">Cerrar</button>
+        <button class="btn-primary" onclick="addAppointmentFromDay()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Agregar Cita</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lawyer Modal -->
+  <div id="lawyer-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeLawyerModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="lawyer-modal-title">Nuevo Abogado</h3>
+        <button class="btn-close" onclick="closeLawyerModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="lawyer-form" onsubmit="saveLawyer(event)">
+        <input type="hidden" id="lawyer-id">
+        
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" id="lawyer-name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" id="lawyer-email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Teléfono *</label>
+          <input type="tel" id="lawyer-phone" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Especialización *</label>
+          <select id="lawyer-specialization" required>
+            <option value="">Seleccionar especialización</option>
+            <option value="Derecho Civil">Derecho Civil</option>
+            <option value="Derecho Familiar">Derecho Familiar</option>
+            <option value="Derecho Mercantil">Derecho Mercantil</option>
+            <option value="Derecho Laboral">Derecho Laboral</option>
+            <option value="Derecho Penal">Derecho Penal</option>
+            <option value="Derecho Constitucional">Derecho Constitucional</option>
+            <option value="Derecho Administrativo">Derecho Administrativo</option>
+            <option value="Derecho Internacional">Derecho Internacional</option>
+            <option value="Propiedad Intelectual">Propiedad Intelectual</option>
+            <option value="Derecho Fiscal">Derecho Fiscal</option>
+          </select>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeLawyerModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            <span id="save-lawyer-text">Agregar Abogado</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div id="upload-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeUploadModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Subir Documento</h3>
+        <button class="btn-close" onclick="closeUploadModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="upload-area">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17,8 12,3 7,8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p>Arrastre archivos aquí o haga clic para seleccionar</p>
+        <p class="upload-hint">PDF, Word, Excel, Imágenes hasta 50MB</p>
+        <input type="file" id="file-input" multiple onchange="handleFileUpload(event)">
+        <label for="file-input" class="btn-secondary">Seleccionar Archivos</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
